@@ -100,10 +100,11 @@ contract Ownable is Context {
 contract QuiztokQuizPackHistory is Ownable{
 
     struct quizPacksInfo{
+        string wallet; // 지갑 주소
         string quizPackName;
         string quizPackType;
         string quizPackTag;
-        string quizPackId;
+
     }
 
  struct quizPacksTxInfo{
@@ -118,20 +119,20 @@ contract QuiztokQuizPackHistory is Ownable{
 
 
 
- function getQuizPacksInfo(uint256 id ) public view returns(string memory, string memory,string memory ,string memory){ // 퀴즈 팩 정보 조회  
+ function getQuizPacksInfo(uint256 id ) public view returns(string memory, string memory, string memory , string memory){ // 퀴즈 팩 정보 조회  
         quizPacksInfo storage r = quizPacksInfos[id];
-        return(r.quizPackName,r.quizPackType,r.quizPackTag,r.quizPackId);
+        return(r.quizPackName, r.quizPackType, r.quizPackTag , r.wallet);
     }
     
     
-    function registerQuizPackInfo(uint256 _id, string memory _quizPackName, string memory _quizPackType , string memory _quizPackTag, string memory _quizPackId ) public onlyOwner { // 퀴즈팩 정보 등록 
+    function registerQuizPackInfo(uint256 _id, string memory _quizPackName, string memory _quizPackType , string memory _quizPackTag, string memory _wallet ) public onlyOwner { // 퀴즈팩 정보 등록 
                                    
         uint id = _id;
         quizPacksInfo storage newQuizPacksInfo = quizPacksInfos[id];
         newQuizPacksInfo.quizPackName = _quizPackName;
         newQuizPacksInfo.quizPackType = _quizPackType;
         newQuizPacksInfo.quizPackTag = _quizPackTag;
-        newQuizPacksInfo.quizPackId = _quizPackId;
+        newQuizPacksInfo.wallet = _wallet; 
         quizPacksInfoDatas.push(newQuizPacksInfo);
     }
 
@@ -139,11 +140,6 @@ contract QuiztokQuizPackHistory is Ownable{
         return quizPacksInfoDatas.length;
     }
     
-    function setGoodsTxHash(uint256 id , string memory _txHash ) public onlyOwner { 
-        quizPacksTxInfo storage newQuizPacksTxInfo = quizPacksTxInfos[_txHash];
-        newQuizPacksTxInfo.id = id;
-        quizPacksTxInfoDatas.push(newQuizPacksTxInfo);
-    }
 
     function getQuizPacksByTxHash(string memory _txHash) public view returns(uint256){
         quizPacksTxInfo storage r = quizPacksTxInfos[_txHash];
