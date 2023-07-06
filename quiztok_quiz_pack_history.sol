@@ -92,8 +92,6 @@ contract Ownable is Context {
     function isOwner() public view returns (bool) {
         return _msgSender() == _owner;
     }
-
-
 }
 
 
@@ -104,46 +102,40 @@ contract QuiztokQuizPackHistory is Ownable{
         string quizPackName;
         string quizPackType;
         string quizPackTag;
-
     }
 
- struct quizPacksTxInfo{
-        uint256 id;
-
-    }
     mapping(uint256 => quizPacksInfo) quizPacksInfos;
+    mapping(string => quizPacksInfo[]) userQuizPacksInfos;
     quizPacksInfo[] private quizPacksInfoDatas;
-    
-    mapping(string => quizPacksTxInfo) quizPacksTxInfos;
-    quizPacksTxInfo[] private quizPacksTxInfoDatas;
 
-
-
- function getQuizPacksInfo(uint256 id ) public view returns(string memory, string memory, string memory , string memory){ // 퀴즈 팩 정보 조회  
-        quizPacksInfo storage r = quizPacksInfos[id];
+    function getQuizPacksInfo(uint256 num ) public view returns(string memory, string memory, string memory , string memory){ // 퀴즈 팩 정보 조회  
+        quizPacksInfo storage r = quizPacksInfos[num];
         return(r.quizPackName, r.quizPackType, r.quizPackTag , r.wallet);
     }
-    
-    
-    function registerQuizPackInfo(uint256 _id, string memory _quizPackName, string memory _quizPackType , string memory _quizPackTag, string memory _wallet ) public onlyOwner { // 퀴즈팩 정보 등록 
+
+    function registerQuizPackInfo(uint256 num, string memory quizPackName, string memory quizPackType , string memory quizPackTag, string memory wallet ) public onlyOwner { // 퀴즈팩 정보 등록 
                                    
-        uint id = _id;
-        quizPacksInfo storage newQuizPacksInfo = quizPacksInfos[id];
-        newQuizPacksInfo.quizPackName = _quizPackName;
-        newQuizPacksInfo.quizPackType = _quizPackType;
-        newQuizPacksInfo.quizPackTag = _quizPackTag;
-        newQuizPacksInfo.wallet = _wallet; 
+        quizPacksInfo storage newQuizPacksInfo = quizPacksInfos[num];
+        newQuizPacksInfo.quizPackName = quizPackName;
+        newQuizPacksInfo.quizPackType = quizPackType;
+        newQuizPacksInfo.quizPackTag = quizPackTag;
+        newQuizPacksInfo.wallet = wallet; 
         quizPacksInfoDatas.push(newQuizPacksInfo);
+        userQuizPacksInfos[wallet].push(newQuizPacksInfo);
+
     }
 
-    function getQuizPacksCount() public view returns(uint256){ //퀴즈팩 등록 수
+    function getQuizPacksCount() public view returns(uint256){ //퀴즈팩 총 풀이 수 
         return quizPacksInfoDatas.length;
     }
-    
 
-    function getQuizPacksByTxHash(string memory _txHash) public view returns(uint256){
-        quizPacksTxInfo storage r = quizPacksTxInfos[_txHash];
-        return(r.id);
+    function getUserQuizPackCount(string memory wallet) public view returns(uint256){ // 사용자 별 퀴즈팩 풀이 수 
+        return userQuizPacksInfos[wallet].length; 
+    }
+
+    function getUserQuizPackInfo(string memory wallet, uint256  num) public view returns(string memory, string memory, string memory, string memory ){ // 퀴즈팩 풀이 정보 호출 
+        quizPacksInfo storage r = userQuizPacksInfos[wallet][num-1];
+        return(r.quizPackName, r.quizPackType, r.quizPackTag , r.wallet); 
     }
 
 }
