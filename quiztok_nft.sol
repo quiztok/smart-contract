@@ -1,34 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721BurnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721VotesUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol";
 
-contract QuiztokNFT is Initializable, ERC721Upgradeable, ERC721EnumerableUpgradeable, ERC721URIStorageUpgradeable, ERC721PausableUpgradeable, OwnableUpgradeable, ERC721BurnableUpgradeable, EIP712Upgradeable, ERC721VotesUpgradeable {
+contract QuiztokNFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, Ownable, ERC721Burnable, EIP712, ERC721Votes {
     uint256 private _nextTokenId;
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
-
-    function initialize(address initialOwner) initializer public {
-        __ERC721_init("Quiztok NFT", "QNFT");
-        __ERC721Enumerable_init();
-        __ERC721URIStorage_init();
-        __ERC721Pausable_init();
-        __Ownable_init(initialOwner);
-        __ERC721Burnable_init();
-        __EIP712_init("Quiztok NFT", "1");
-        __ERC721Votes_init();
-    }
+    constructor(address initialOwner)
+        ERC721("Quiztok NFT", "QNFT")
+        Ownable(initialOwner)
+        EIP712("Quiztok NFT", "1")
+    {}
 
     function pause() public onlyOwner {
         _pause();
@@ -48,7 +37,7 @@ contract QuiztokNFT is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
 
     function _update(address to, uint256 tokenId, address auth)
         internal
-        override(ERC721Upgradeable, ERC721EnumerableUpgradeable, ERC721PausableUpgradeable, ERC721VotesUpgradeable)
+        override(ERC721, ERC721Enumerable, ERC721Pausable, ERC721Votes)
         returns (address)
     {
         return super._update(to, tokenId, auth);
@@ -56,7 +45,7 @@ contract QuiztokNFT is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
 
     function _increaseBalance(address account, uint128 value)
         internal
-        override(ERC721Upgradeable, ERC721EnumerableUpgradeable, ERC721VotesUpgradeable)
+        override(ERC721, ERC721Enumerable, ERC721Votes)
     {
         super._increaseBalance(account, value);
     }
@@ -64,7 +53,7 @@ contract QuiztokNFT is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
     function tokenURI(uint256 tokenId)
         public
         view
-        override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
+        override(ERC721, ERC721URIStorage)
         returns (string memory)
     {
         return super.tokenURI(tokenId);
@@ -73,7 +62,7 @@ contract QuiztokNFT is Initializable, ERC721Upgradeable, ERC721EnumerableUpgrade
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC721Upgradeable, ERC721EnumerableUpgradeable, ERC721URIStorageUpgradeable)
+        override(ERC721, ERC721Enumerable, ERC721URIStorage)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
